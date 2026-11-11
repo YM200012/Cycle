@@ -1,0 +1,164 @@
+.activity-page{max-width:1540px;margin:0 auto;min-width:0}.activity-back{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-size:12px;padding:5px 0;margin:0 0 19px}.activity-back:hover{color:var(--blue);background:none}.activity-title-row{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:23px}.activity-title{display:flex;gap:14px;align-items:center;min-width:0}.activity-sport-icon{width:49px;height:49px;display:grid;place-items:center;border-radius:14px;background:var(--soft);color:var(--blue);flex-shrink:0}.activity-sport-icon .icon{width:28px;height:28px}.activity-title h1{font-size:26px;line-height:1.3;overflow-wrap:anywhere}.activity-title p{margin-top:7px;color:var(--muted);font-size:12px}.ride-hero{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden;margin-bottom:24px}.ride-hero-stat{padding:23px 20px;min-width:0}.ride-hero-stat+.ride-hero-stat{border-left:1px solid var(--line)}.ride-hero-stat>span{font-size:11px;color:var(--muted)}.ride-hero-stat strong{display:block;font-size:29px;letter-spacing:-.9px;font-weight:650;font-variant-numeric:tabular-nums;margin:9px 0}.ride-hero-stat strong small{font-size:12px;font-weight:400;letter-spacing:0;color:var(--muted);margin-left:4px}.ride-hero-stat p{font-size:10px;color:var(--muted);line-height:1.5}.ride-hero-stat.speed{background:linear-gradient(150deg,var(--soft),var(--bg))}.ride-hero-stat.speed strong{color:var(--blue)}.activity-page>.activity-tabs{padding:0;gap:27px;margin-bottom:24px;overflow:auto;white-space:nowrap}.activity-page>.activity-tabs button{font-size:13px;padding:14px 1px}.activity-detail-body{min-width:0}.ride-overview-grid{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(255px,1fr);gap:20px;margin-bottom:20px}.activity-page .panel{border-radius:10px}.ride-route-panel{min-width:0;display:flex;flex-direction:column}.ride-route-panel .route-map{flex:1}.ride-highlights{display:flex;flex-direction:column}.ride-highlight-list{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:7px 20px 14px;gap:4px 18px}.ride-highlight-list .ride-metric{border-bottom:1px solid var(--line);padding:17px 0;display:block}.ride-highlight-list .ride-metric dd{font-size:23px;margin-top:7px}.ride-highlight-list .ride-metric>span{display:none}.ride-highlight-foot{margin-top:auto;padding:14px 20px;background:var(--canvas);font-size:11px;color:var(--muted)}.ride-metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:20px 0}.ride-metric-list{margin:0;padding:3px 20px 11px}.ride-metric{padding:13px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;align-items:baseline}.ride-metric:last-child{border:0}.ride-metric dt{color:var(--muted);font-size:12px}.ride-metric dd{margin:0;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}.ride-metric dd small{font-size:11px;font-weight:400;color:var(--muted);margin-left:5px}.ride-metric>span{font-size:9px;color:var(--muted);grid-column:1/-1;opacity:.85}.ride-card-note{font-size:11px;color:var(--muted);line-height:1.8;margin:0 20px 18px}.ride-record-info{padding:8px 20px 20px;line-height:1.7}.ride-record-info dl{margin:0 0 15px}.ride-record-info dt{font-size:11px;color:var(--muted);margin-top:12px}.ride-record-info dd{margin:3px 0;font-size:12px;overflow-wrap:anywhere}.ride-devices{font-size:12px;padding-left:17px;margin:12px 0}.ride-record-info .tiny{margin-top:10px}.ride-data-notes{padding-left:17px;font-size:11px;color:var(--muted);line-height:1.9;margin:16px 0 0}.ride-preview{margin:20px 0}.ride-preview .panel-body{padding:13px 18px}.ride-preview h3{font-size:12px;margin:4px 0 4px 10px}.ride-preview .chart{max-height:none}.activity-detail-body>.timeline-chart{padding:20px;border:1px solid var(--line);border-radius:10px;background:var(--bg);margin-top:15px}.activity-detail-body>.timeline-chart .chart{max-height:none}.activity-detail-body>.table-scroll{background:var(--bg);border:1px solid var(--line);border-radius:10px}.activity-empty-loading{padding:80px;text-align:center;color:var(--muted)}.activity-footer-actions{display:flex;gap:10px;justify-content:flex-end;padding:24px 0;margin-top:10px;border-top:1px solid var(--line)}
+@media(min-width:1600px){.ride-hero-stat{padding:25px}.ride-hero-stat strong{font-size:33px}}
+@media(max-width:1200px){.ride-hero{grid-template-columns:repeat(3,minmax(0,1fr))}.ride-hero-stat:nth-child(4){border-left:0}.ride-hero-stat:nth-child(n+4){border-top:1px solid var(--line)}.ride-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ride-overview-grid{grid-template-columns:minmax(0,1.8fr) minmax(230px,1fr)}.ride-hero-stat{padding:18px 20px}.ride-hero-stat strong{font-size:27px}}
+@media(max-width:900px){.ride-overview-grid{grid-template-columns:1fr}.ride-highlight-list{grid-template-columns:repeat(3,minmax(0,1fr))}.activity-title-row{flex-wrap:wrap}.activity-title-row>.actions{width:100%;justify-content:flex-end}}
+@media(max-width:600px){.activity-title h1{font-size:22px}.activity-sport-icon{width:40px;height:40px;border-radius:11px}.activity-title{gap:10px}.ride-hero-stat{padding:15px 11px}.ride-hero-stat strong{font-size:22px;letter-spacing:-.6px}.ride-hero-stat strong small{font-size:10px}.ride-hero-stat p{font-size:9px}.ride-metric-grid{grid-template-columns:1fr}.ride-highlight-list{grid-template-columns:repeat(2,minmax(0,1fr))}.activity-page>.activity-tabs{gap:21px}.activity-back{margin-bottom:15px}.activity-title-row{gap:14px}.activity-detail-body .data-table{min-width:600px}.activity-footer-actions{flex-wrap:wrap}.activity-page .panel-head{padding:17px}.ride-preview .panel-body{padding:10px 4px}.activity-detail-body>.timeline-chart{padding:15px 3px}.activity-detail-body>.timeline-chart h3{padding-left:12px}}
+
+.ride-route-panel>.route-map{border:0;border-radius:0}.ride-route-panel .route-map-toolbar strong{display:none}.ride-route-panel .route-map-toolbar p{margin-top:0}.ride-preview,.timeline-chart{position:relative}.ride-chart-inspection{position:absolute;top:55px;right:15px;left:15px;z-index:2;width:fit-content;max-width:calc(100% - 30px);padding:9px 12px;border-radius:6px;background:#1c3042e8;color:#fff;font-size:11px;line-height:1.7;pointer-events:none;box-shadow:0 3px 14px #0002}.ride-chart-inspection[hidden]{display:none}.timeline-chart .ride-chart-inspection{top:36px}.ride-chart-cursor{stroke:var(--blue);stroke-width:1;stroke-dasharray:4 3;pointer-events:none}.activity-title h1:focus{outline:none}.activity-page .chart{cursor:crosshair}
+
+.breadcrumb{min-width:0}.breadcrumb strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55vw}.ride-notes .detail-notes{overflow-wrap:anywhere}.ride-metric-panel{min-width:0}
+
+.ride-insight-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 20px}.ride-insight-card{padding:18px 20px}.ride-insight-card h3{font-size:12px;margin-bottom:15px;color:var(--muted);font-weight:500}.ride-insight-card>div{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 0}.ride-insight-card strong{font-size:17px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}.ride-insight-card span{font-size:10px;color:var(--muted);text-align:right}.ride-missing-fields{border-top:1px solid var(--line);font-size:11px;color:var(--muted);margin:5px 20px 16px;padding-top:12px}.ride-missing-fields summary{cursor:pointer;line-height:1.8}.ride-missing-fields .ride-metric-list{padding:0}.ride-missing-fields .ride-metric dd{display:none}.ride-missing-fields .ride-metric>span{line-height:1.7}.ride-metric>span>small{font-size:10px;line-height:1.7}.ride-metric.estimated dd{color:#a16f2e}.ride-zone-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:24px}.ride-zone-row{display:grid;grid-template-columns:90px minmax(20px,1fr) 44px;gap:7px;align-items:center;padding:8px 0;font-size:11px}.ride-zone-row small{grid-column:2/-1;text-align:right;color:var(--muted);font-size:10px}.ride-zone-row strong{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}.ride-zone-panel .panel-body{padding:12px 18px}.ride-split-chart,.ride-device-laps{margin-bottom:20px}.ride-device-laps{margin-top:20px}.ride-split-table{white-space:nowrap}.ride-split-table td:first-child{font-weight:550}.ride-split-chart .chart{max-height:250px}.ride-zone-panel{min-width:0}
+@media(max-width:1200px){.ride-insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ride-zone-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.ride-insight-card{padding:15px 13px}.ride-insight-card>div{display:block}.ride-insight-card strong{font-size:16px;display:block}.ride-insight-card span{text-align:left;display:block;margin-top:4px}.ride-insight-card h3{margin-bottom:9px}.ride-insight-grid{gap:10px}.ride-split-chart .panel-body{padding:12px 3px}}
+
+.ride-formula{grid-column:1/-1;color:var(--muted);font-size:10px;line-height:1.8}.ride-formula summary{cursor:pointer;width:fit-content}.ride-formula p{margin-top:6px}.ride-metric.estimated>span small{display:block;line-height:1.8;margin-top:3px}
+
+.ride-estimate-label{display:inline-block;color:#a16f2e;font-size:9px;padding:1px 4px;border-radius:3px;background:#b6822720;font-weight:500;margin-left:3px}
+
+.chart-zoom-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;color:var(--muted);padding:5px 15px}.chart-zoom-toolbar>div{display:flex;gap:4px}.chart-zoom-toolbar button{padding:4px 9px;border:1px solid var(--line);border-radius:5px;background:var(--bg);font-size:11px}.interactive-chart svg.chart{touch-action:pan-y;cursor:crosshair}.chart-zoom-selection{fill:#1976d22b;stroke:#1976d2;stroke-width:1;pointer-events:none}.elevation-toolbar{padding:15px 18px;margin-bottom:16px}.elevation-toolbar p{font-size:11px;color:var(--muted);line-height:1.8;margin:8px 0}.elevation-toolbar .actions{flex-wrap:wrap}
+
+.performance-estimates{margin-bottom:20px}.estimate-value{font-size:36px;font-weight:700;color:#8e67b1;margin:14px 0}.estimate-value small{font-size:15px;font-weight:400}.performance-estimates p{line-height:1.7}.weather-range-analysis{margin:20px 0}.weather-wind-share{display:flex;gap:32px;flex-wrap:wrap;margin:24px 0 12px}.weather-wind-share strong{font-size:24px;color:#348fa8}.weather-rose-panel{text-align:center}.wind-rose{width:260px;max-width:100%;color:var(--text,#52616e)}
+
+.weather-range-analysis .analysis-stats{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:1100px){.weather-range-analysis .analysis-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.ftp-method-field{max-width:360px;margin-top:14px}.ftp-method-details{margin-top:24px}.ftp-method-details>summary{cursor:pointer;font-weight:600;margin-bottom:12px}.ftp-method-details td{white-space:normal;line-height:1.7}.ftp-activity-picker{margin-bottom:18px}
+
+.ftp-evidence-notice,.ftp-review-note{padding:16px;border:1px solid #d6b262;border-radius:8px;background:rgba(228,187,82,.09);line-height:1.7;margin:16px 0}.ftp-review-note{margin:20px}.ftp-activity-reference{margin-top:18px}
+
+.apple-health-panel{margin-bottom:20px}.apple-health-panel p{line-height:1.7}
+.health-inventory{max-height:360px;overflow:auto;margin:16px 0}.health-inventory td:nth-child(2){max-width:420px;overflow-wrap:anywhere}.health-inventory input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue,#367fea)}
+.health-chart-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:25px 0 16px}.health-chart-toolbar>div:first-child{flex:1;min-width:220px}.health-chart-toolbar .field{min-width:210px}.health-chart-group{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:0 16px}.health-chart-group>summary{cursor:pointer;padding:15px 0;list-style-position:inside}.health-chart-group>summary strong{margin:0 10px 0 2px}.health-chart-group>.grid-2{padding-bottom:16px}.health-metric-card{margin-bottom:0}.health-metric-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.health-select-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 0}.health-select-tools input{flex:1;min-width:180px}.health-select-count{margin-left:auto}.health-chart-group[hidden]{display:none}.health-import-preview .health-additional-charts{margin-top:16px}.health-import-preview .health-chart-toolbar h2{font-size:16px}.health-import-preview .health-chart-group .grid-2{grid-template-columns:1fr}
+
+/* Cycle 1.0 · activity and specialist panels */
+.activity-page { max-width: 1600px; }
+.activity-back { margin-bottom: 21px; font-weight: 500; }
+.activity-title-row { margin-bottom: 27px; gap: 24px; }
+.activity-title { gap: 16px; }
+.activity-title h1 { font-size: 29px; letter-spacing: -.8px; }
+.activity-title p { line-height: 1.7; margin-top: 8px; }
+.activity-sport-icon { width: 54px; height: 54px; border-radius: 16px; }
+.ride-hero { border-radius: 15px; margin-bottom: 26px; box-shadow: var(--shadow-sm); }
+.ride-hero-stat { padding: 23px 21px; }
+.ride-hero-stat > span { font-weight: 500; }
+.ride-hero-stat strong { font-size: 31px; font-weight: 650; line-height: 1.25; margin: 11px 0 9px; }
+.ride-hero-stat p { font-size: 10px; line-height: 1.65; }
+.ride-hero-stat.speed { background: var(--soft); }
+.activity-page > .activity-tabs { gap: 27px; margin-bottom: 25px; }
+.activity-page > .activity-tabs button { padding: 14px 2px; font-weight: 550; }
+.activity-page .panel { border-radius: 14px; }
+.ride-overview-grid, .ride-metric-grid { gap: 22px; }
+.ride-overview-grid { margin-bottom: 23px; }
+.ride-metric-grid { margin: 23px 0; }
+.ride-highlight-list { gap: 4px 20px; padding: 5px 22px 14px; }
+.ride-highlight-list .ride-metric { padding: 18px 0; }
+.ride-highlight-list .ride-metric dd { font-size: 25px; letter-spacing: -.5px; }
+.ride-highlight-foot { padding: 15px 22px; background: var(--surface-soft); }
+.ride-metric-list { padding: 4px 22px 13px; }
+.ride-metric { padding: 15px 0; gap: 6px 12px; }
+.ride-metric dt { line-height: 1.6; font-size: 12px; }
+.ride-metric dd { font-size: 18px; letter-spacing: -.3px; }
+.ride-metric dd small { letter-spacing: 0; }
+.ride-metric > span { line-height: 1.7; opacity: 1; font-size: 10px; }
+.ride-card-note { margin-left: 22px; margin-right: 22px; }
+.ride-record-info { padding: 8px 22px 22px; }
+.ride-record-info dt { margin-top: 15px; }
+.ride-record-info dd { line-height: 1.8; }
+.ride-record-info dl { margin-bottom: 18px; }
+.ride-preview { margin: 23px 0; }
+.ride-preview h3 { font-size: 13px; }
+.ride-preview .panel-body { padding: 18px 19px 8px; }
+.activity-detail-body > .timeline-chart { border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm); margin-top: 20px; }
+.activity-detail-body > .timeline-chart h3 { font-size: 13px; }
+.activity-detail-body > .table-scroll { border-radius: 14px; box-shadow: var(--shadow-sm); }
+.activity-footer-actions { padding: 27px 0; }
+.ride-chart-inspection { border: 1px solid rgba(255, 255, 255, .12); border-radius: 9px; padding: 10px 14px; background: #20334ded; box-shadow: 0 5px 16px rgba(15, 28, 46, .15); }
+.ride-insight-grid { gap: 16px; margin-bottom: 23px; }
+.ride-insight-card { padding: 21px; }
+.ride-insight-card h3 { margin-bottom: 17px; font-size: 12px; }
+.ride-insight-card strong { font-size: 19px; letter-spacing: -.35px; }
+.ride-insight-card span { font-size: 10px; line-height: 1.7; }
+.ride-zone-grid { gap: 22px; }
+.ride-zone-row { padding: 10px 0; }
+.ride-zone-panel .panel-body { padding: 13px 20px; }
+.ride-missing-fields { margin: 6px 22px 19px; padding-top: 14px; }
+.ride-formula { font-size: 10px; line-height: 1.8; }
+.ride-formula summary { padding: 4px 0; }
+.ride-formula p { padding: 10px 12px; border-radius: 7px; background: var(--surface-soft); }
+.ride-estimate-label { border-radius: 4px; padding: 2px 5px; font-size: 9px; color: #805919; background: #f8eedb; }
+.ride-metric.estimated dd { color: #8c6025; }
+.chart-zoom-toolbar { padding: 6px 15px 10px; gap: 12px; font-size: 10px; }
+.chart-zoom-toolbar > div { gap: 5px; }
+.chart-zoom-toolbar button { min-height: 28px; min-width: 29px; border-radius: 7px; padding: 4px 10px; font-size: 10px; color: var(--muted); }
+.chart-zoom-toolbar button:hover { color: var(--blue); border-color: color-mix(in srgb, var(--blue) 30%, var(--line)); background: var(--soft); }
+.elevation-toolbar { padding: 18px 21px; border-radius: 11px; }
+.elevation-toolbar p { line-height: 1.8; }
+.performance-estimates { margin-bottom: 24px; }
+.estimate-value { font-size: 41px; line-height: 1.2; letter-spacing: -1px; margin: 17px 0; color: #8970b6; }
+.estimate-value small { margin-left: 4px; letter-spacing: 0; }
+.ftp-method-field { margin-top: 18px; }
+.ftp-method-details { margin-top: 23px; }
+.ftp-method-details > summary { padding: 12px 0; font-size: 12px; }
+.ftp-evidence-notice, .ftp-review-note { border-color: #e4d0a4; background: #fcf8ee; color: var(--text); border-radius: 11px; padding: 18px; }
+.ftp-review-note { margin: 23px; }
+.weather-range-analysis { margin: 24px 0; }
+.weather-wind-share { gap: 35px; margin: 27px 0 15px; }
+.weather-wind-share strong { font-size: 28px; color: #358e9b; letter-spacing: -.6px; }
+.weather-rose-panel { padding-bottom: 10px; }
+.apple-health-panel { margin-bottom: 26px; }
+.apple-health-panel .panel-body { padding-top: 20px; padding-bottom: 20px; }
+.apple-health-panel .panel-body p + p { margin-top: 7px; }
+.health-inventory { margin: 18px 0; border: 1px solid var(--line); border-radius: 10px; max-height: 390px; }
+.health-inventory th { position: sticky; top: 0; z-index: 1; }
+.health-inventory td:nth-child(2) { max-width: 390px; }
+.health-inventory td .tiny { font-size: 9px; color: var(--muted); margin-top: 3px; }
+.health-select-tools { margin-top: 20px; gap: 9px; }
+.health-select-count { border-radius: 20px; padding: 5px 10px; background: var(--soft); color: var(--blue); }
+.health-chart-toolbar { margin: 29px 0 18px; gap: 12px; align-items: flex-end; }
+.health-chart-toolbar h2 { margin-bottom: 4px; font-size: 18px; }
+.health-chart-group { margin: 14px 0; padding: 0 20px; border-radius: 14px; box-shadow: var(--shadow-sm); }
+.health-chart-group > summary { padding: 19px 0; font-size: 13px; color: var(--muted); }
+.health-chart-group > summary strong { color: var(--text); font-weight: 650; margin-left: 4px; }
+.health-chart-group > summary:hover { color: var(--blue); }
+.health-chart-group > .grid-2 { padding-bottom: 20px; }
+.health-chart-group .health-metric-card { background: var(--bg); box-shadow: none; }
+.health-metric-card .panel-head { background: var(--surface-soft); }
+.health-metric-card .panel-body { padding-bottom: 14px; }
+.health-metric-summary { gap: 12px; line-height: 1.7; }
+.health-metric-summary strong { font-variant-numeric: tabular-nums; font-weight: 650; }
+.health-metric-card .chart-wrap { padding-top: 6px; }
+.health-chart-empty { padding: 22px; text-align: center; }
+.health-import-preview .health-chart-toolbar { align-items: center; }
+.health-import-preview .health-chart-toolbar > div:first-child { min-width: 100%; }
+.health-import-preview .health-chart-group { padding-left: 15px; padding-right: 15px; }
+body.dark .ride-estimate-label { background: #3e3526; color: #dfba7d; }
+body.dark .ride-metric.estimated dd { color: #dfba7d; }
+body.dark .estimate-value { color: #c0a8e4; }
+body.dark .weather-wind-share strong { color: #80c5cc; }
+body.dark .ftp-evidence-notice, body.dark .ftp-review-note { border-color: #665539; background: #332e25; }
+@media (min-width: 1600px) {
+  .ride-hero-stat { padding: 25px; }
+  .ride-hero-stat strong { font-size: 34px; }
+}
+@media (max-width: 1200px) {
+  .ride-hero-stat { padding: 20px; }
+  .ride-hero-stat strong { font-size: 29px; }
+}
+@media (max-width: 900px) {
+  .activity-title h1 { font-size: 26px; }
+  .ride-highlight-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .activity-title h1 { font-size: 23px; }
+  .activity-sport-icon { width: 44px; height: 44px; border-radius: 13px; }
+  .activity-title { gap: 12px; }
+  .ride-hero-stat { padding: 16px 11px; }
+  .ride-hero-stat strong { font-size: 23px; }
+  .ride-overview-grid, .ride-metric-grid, .ride-zone-grid { gap: 16px; }
+  .ride-highlight-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ride-insight-card { padding: 16px; }
+  .health-chart-group { padding-left: 14px; padding-right: 14px; }
+  .health-chart-group > .grid-2 { padding-bottom: 14px; }
+  .health-chart-toolbar .field { min-width: 160px; flex: 1; }
+  .chart-zoom-toolbar { flex-wrap: wrap; }
+}
