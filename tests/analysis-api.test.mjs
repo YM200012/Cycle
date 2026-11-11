@@ -1,0 +1,53 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp,rm,readFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {startServer} from '../src/server.mjs';
+
+test('analysis API validates edits, preserves raw data and restores compatible backups',async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'cycle-analysis-api-'));const server=await startServer({dataDir:dir});
+  const api=async(path,method='GET',data)=>{const response=await fetch(server.url+'/api'+path,{method,headers:{'content-type':'application/json'},...(data===undefined?{}:{body:JSON.stringify(data)})});return {status:response.status,data:await response.json()};};
+  try{
+    const streams=Array.from({length:1801},(_,time)=>({time,power:200,hr:130,lat:31.2,lon:121.4}));
+    const created=await api('/activities','POST',{name:'Known power',type:'Ride',date:'2026-11-08',duration:30,load:1,streams,laps:[{start:0,end:900,label:'Lap 1'},{start:900,end:1800,label:'Lap 2'}]});
+    assert.equal(created.status,201);const id=created.data.id;
+    let result=await api('/activities/'+id+'/analysis');assert.equal(result.data.mode,'device');assert.equal(result.data.intervals.length,2);assert.equal(result.data.summary.normalizedPower,200);assert.equal(result.data.summary.tss,32);
+    assert.equal((await api('/activities/'+id+'/segments','PUT',{segments:[{start:100,end:80}]})).status,400);
+    assert.equal((await api('/activities/'+id+'/segments','PUT',{segments:[{start:0,end:200},{start:150,end:300}]})).status,400);
+    assert.equal((await api('/activities/'+id+'/segments','PUT',{segments:[{start:0,end:2000}]})).status,400);
+    assert.equal((await api('/activities/'+id+'/segments','PUT',{segments:[{start:0,end:600,label:'Manual'}]})).status,200);
+    result=await api('/activities/'+id+'/analysis');assert.equal(result.data.mode,'manual');assert.equal(result.data.intervals[0].label,'Manual');
+    assert.equal((await api('/activities/'+id+'/analysis?mode=auto')).data.intervals.length,0);
+    assert.equal((await api('/activities/'+id+'/power-corrections','PUT',{corrections:[{time:1801,power:300}]})).status,400);
+    assert.equal((await api('/activities/'+id+'/power-corrections','PUT',{corrections:[{time:0,power:300},{time:0,power:200}]})).status,400);
+    const corrections=[{time:100,power:1000},{time:101,power:null}];
+    assert.equal((await api('/activities/'+id+'/power-corrections','PUT',{corrections})).status,200);
+    result=await api('/activities/'+id+'/analysis');assert.equal(result.data.summary.correctionCount,2);
+    assert.equal((await api('/activities/'+id)).data.streams[100].power,200);
+    let power=(await api('/power?from=2026-11-08&to=2026-11-08&type=Ride')).data;assert.equal(power.curve[0].watts,1000);
+    assert.equal((await api('/power?from=2026-11-09')).data.curve.length,0);
+    assert.equal((await api('/power?type=Run')).data.curve.length,0);
+    assert.equal((await api('/power?from=2026-11-09&to=2026-11-01')).status,400);
+    const backup=(await api('/backup')).data;await api('/restore','POST',backup);
+    assert.deepEqual((await api('/activities/'+id)).data.powerCorrections,corrections);
+    assert.equal((await api('/activities/'+id+'/power-corrections','PUT',{corrections:[]})).status,200);
+    power=(await api('/power')).data;assert.equal(power.curve[0].watts,200);
+    assert.equal((await api('/activities/'+id+'/apply-load','POST',{})).data.load,32);
+    assert.equal((await api('/activities/'+id)).data.loadMeta.method,'NP-TSS');
+    await api('/activities/'+id,'PUT',{notes:'Notes edit'});assert.equal((await api('/activities/'+id)).data.loadMeta.method,'NP-TSS');
+    await api('/activities/'+id,'PUT',{load:10});assert.equal((await api('/activities/'+id)).data.loadMeta,undefined);
+    const paused=await api('/activities','POST',{name:'Pause raw',date:'2026-11-07',duration:10/60,streams:[{time:0,power:900,hr:160,timerActive:false},{time:5,power:200,hr:130,timerActive:true},{time:10,power:200,hr:130,timerActive:true}]});
+    assert.equal(paused.data.streams[0].power,900);assert.equal(paused.data.streams[0].timerActive,false);
+    assert.equal((await api('/activities/'+paused.data.id+'/analysis')).data.summary.avgPower,200);
+    assert.equal((await api('/activities/'+paused.data.id+'/power-corrections','PUT',{corrections:[{time:0,power:300}]})).status,400);
+    const pauseBackup=(await api('/backup')).data;await api('/restore','POST',pauseBackup);
+    assert.equal((await api('/activities/'+paused.data.id)).data.streams[0].power,900);
+    await api('/activities/'+id+'/segments','PUT',{reset:true});assert.equal((await api('/activities/'+id+'/analysis')).data.mode,'auto');
+    const legacy={version:1,settings:backup.settings,activities:[{id:'legacy',name:'Legacy',date:'2026-11-01',duration:60,load:50}],workouts:[]};
+    assert.equal((await api('/restore','POST',legacy)).status,200);assert.equal((await api('/activities/legacy')).data.load,50);
+    const fixture=await readFile(new URL('./fixtures/garmin-activity.fit',import.meta.url));
+    const imported=await api('/import','POST',{filename:'garmin-activity.fit',content:fixture.toString('base64')});assert.equal(imported.status,201);assert.equal(imported.data.count,1);
+    const fit=imported.data.activities[0];assert.equal(fit.streams.length,3601);assert.ok(fit.laps.length>0);assert.equal((await api('/activities/'+fit.id+'/analysis')).status,200);
+  }finally{await server.close();await rm(dir,{recursive:true,force:true});}
+});
