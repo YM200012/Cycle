@@ -1,0 +1,20 @@
+Cycle local training workspace — third-party notices
+
+FIT file decoding:
+  @garmin/fitsdk 21.221.0, Garmin International, Inc.
+  https://github.com/garmin/fit-javascript-sdk
+  License: Garmin FIT Protocol License Agreement.
+  The original license is retained at node_modules/@garmin/fitsdk/LICENSE.txt
+  within the packaged application. SDK files are used without modification.
+
+Desktop runtime:
+  Electron 39.2.7 and its bundled Chromium/Node.js components.
+  The Electron distribution retains LICENSE and LICENSES.chromium.html.
+
+Test-only FIT fixture:
+  Garmin SDK test/data/Activity.fit (upstream synthetic test activity).
+  Source and SHA256 are recorded in tests/fixtures/manifest.json.
+  The fixture and tests are excluded from the desktop application package.
+
+Intervals.icu investigation reference downloads are excluded from the source
+repository and desktop application. They are not executable dependencies of Cycle.

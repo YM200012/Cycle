@@ -1,0 +1,28 @@
+{
+  "name": "cycle-local",
+  "version": "1.0.0",
+  "description": "离线训练日志与分析桌面应用",
+  "private": true,
+  "main": "electron/main.cjs",
+  "author": "Local",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "web": "node scripts/start.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "devDependencies": {
+    "@electron/packager": "18.3.6",
+    "electron": "39.2.7"
+  },
+  "allowScripts": {
+    "electron@39.2.7": true
+  },
+  "dependencies": {
+    "@garmin/fitsdk": "21.221.0"
+  }
+}
