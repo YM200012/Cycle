@@ -1,0 +1,13 @@
+{
+  "fixtures": [
+    {
+      "file": "garmin-activity.fit",
+      "url": "https://raw.githubusercontent.com/garmin/fit-javascript-sdk/main/test/data/Activity.fit",
+      "retrieved": "2026-11-09",
+      "bytes": 94096,
+      "sha256": "949a238e1bb75c3684479785f76fa9a16888bb394518844248f488171d591387",
+      "description": "Garmin official SDK test fixture; synthetic encoded activity, not personal device observations.",
+      "license": "Garmin FIT Protocol License Agreement; upstream SDK LICENSE.txt"
+    }
+  ]
+}
