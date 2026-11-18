@@ -24,4 +24,4 @@
 - `Cycle-1.0.0-macOS-arm64.zip`
 - `SHA256SUMS.txt`
 
-指标口径见各功能说明文档。
+验收证据见 [VALIDATION-v1.0.0.md](VALIDATION-v1.0.0.md)；指标口径见各功能说明文档。

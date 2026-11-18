@@ -1,6 +1,6 @@
 {
   "name": "cycle-local",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "离线训练日志与分析桌面应用",
   "private": true,
   "main": "electron/main.cjs",
@@ -23,6 +23,7 @@
     "electron@39.2.7": true
   },
   "dependencies": {
-    "@garmin/fitsdk": "21.221.0"
+    "@garmin/fitsdk": "21.221.0",
+    "marked": "16.4.2"
   }
 }

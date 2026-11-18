@@ -15,3 +15,7 @@ evidence/
 *.db-*
 *.pem
 *.key
+
+# Local AI connection credentials
+ai-config.json
+ai-models.json

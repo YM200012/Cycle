@@ -8,25 +8,25 @@
 
 .route-map[data-basemap=light] [data-route-layer=tiles]{opacity:1}.route-map[data-basemap=light] .route-map-svg{background-image:none;background-color:#f1f3f0}
 
-/* Cycle 1.0 · map controls */
-.route-map { border-radius: 14px; border-color: var(--line); box-shadow: var(--shadow-sm); }
-.route-map-toolbar { padding: 18px 21px; gap: 15px; background: var(--bg); border-bottom: 1px solid var(--line); }
+/* Map tools share the desktop control scale; route colors remain unchanged. */
+.route-map { border-radius: 4px; border-color: var(--line); box-shadow: var(--shadow-sm); }
+.route-map-toolbar { padding: 12px 16px; gap: 15px; background: var(--bg); border-bottom: 1px solid var(--line); }
 .route-map-toolbar strong { font-size: 14px; font-weight: 650; }
 .route-map-toolbar p { line-height: 1.7; }
 .route-map-toolbar .actions { gap: 8px; }
 .route-map-viewport { background: #edf2f1; }
-.route-map-zoom { top: 16px; right: 16px; border-radius: 11px; box-shadow: 0 3px 12px rgba(27, 49, 73, .10); }
+.route-map-zoom { top: 16px; right: 16px; border-radius: 4px; box-shadow: 0 2px 7px rgba(20, 25, 22, .12); }
 .route-map-zoom button { width: 37px; height: 37px; color: var(--text); }
 .route-map-zoom button:hover { background: var(--soft); color: var(--blue); }
 .route-map-attribution { border-radius: 5px 0 0 0; background: rgba(255, 255, 255, .94); color: #596d78; padding: 4px 8px; font-size: 9px; }
 .route-map-attribution a { color: #3a6d87; }
-.route-map-tip { bottom: 30px; left: 15px; padding: 10px 13px; border-radius: 9px; background: #20334ded; box-shadow: 0 4px 14px rgba(19, 35, 56, .14); }
-.route-map-footer { padding: 15px 21px; gap: 15px; background: var(--bg); border-top: 1px solid var(--line); }
+.route-map-tip { bottom: 30px; left: 15px; padding: 8px 11px; border-radius: 4px; background: var(--bg); color: var(--text); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.route-map-footer { padding: 11px 16px; gap: 15px; background: var(--bg); border-top: 1px solid var(--line); }
 .route-map-color-control { gap: 7px; font-size: 10px; }
-.route-map-color-control select { border-radius: 7px; padding: 6px 8px; font-size: 11px; }
+.route-map-color-control select { border-radius: 3px; padding: 6px 8px; font-size: 11px; }
 .route-speed-legend .route-gradient-bar { height: 7px; border: 1px solid rgba(0, 0, 0, .04); }
 .route-map-privacy { padding-left: 21px; padding-right: 21px; }
-body.dark .route-map-viewport { background: #29383d; }
+body.dark .route-map-viewport { background: #303a32; }
 body.dark .route-map-svg { background-image: linear-gradient(#a7c0b010 1px, transparent 1px), linear-gradient(90deg, #a7c0b010 1px, transparent 1px); }
 body.dark .route-map[data-basemap=light] .route-map-svg { background: #e9eeeb; }
 body.dark .route-map-empty { color: #b5c6c5; }

@@ -9,7 +9,7 @@ import { renderRouteMap, mountRouteMap } from './route-map.js';
 import { resolveFtp } from './settings.mjs';
 // Activity detail tools share the app's modal, request and formatting helpers.
 export function createActivityTools(ctx) {
-  const {state,api,esc,icon,num,duration,modal,closeModal,toast,refresh,renderPage,confirmDialog,chart}=ctx;
+  const {state,api,aiTools,esc,icon,num,duration,modal,closeModal,toast,refresh,renderPage,confirmDialog,chart}=ctx;
   const $=s=>document.querySelector(s);
   const weather=weatherViews({esc,num,chart});
   const insights=rideInsightViews({esc,num,clock:s=>clock(s),chart});
@@ -58,7 +58,7 @@ export function createActivityTools(ctx) {
       const details=rideDetails(a,state.settings);details.gearName=state.gear.find(g=>g.id===a.gearId)?.name;const s=data.summary,rows=a.streams||[],tabs=[['overview','概览'],['streams','时间序列'],['splits','分段数据'],['analysis','间歇分析'],['efforts','最佳努力'],['distribution','分布'],['route','路线'],['weather','天气'],['intervals','训练结构']];
       const m=details.metrics,sourceNames={device:'设备记录',samples:'采样计算',derived:'推算',saved:'已保存',estimated:'估算'};
       const hero=(label,key,unit='',digits=0,cls='')=>{const metric=m[key],valid=Number.isFinite(metric?.value);return `<div class="ride-hero-stat ${cls}"><span>${label}</span><strong>${valid?(key.endsWith('Seconds')?clock(metric.value):num(metric.value,digits)):'—'}<small>${valid?unit:''}</small></strong><p>${valid?sourceNames[metric.source]||'采样计算':'无有效数据'}</p></div>`;};
-      const buttons=`<button class="btn" data-copy-activity="${esc(id)}">${icon('copy')}复制</button>${a.planned&&!a.completionId?`<button class="btn" data-complete-activity="${esc(id)}">${icon('check')}标记完成</button>`:''}<button class="btn primary" data-edit-activity="${esc(id)}">${icon('edit')}编辑活动</button>`;
+      const buttons=`${aiTools?.activityView(a)||''}<button class="btn" data-copy-activity="${esc(id)}">${icon('copy')}复制</button>${a.planned&&!a.completionId?`<button class="btn" data-complete-activity="${esc(id)}">${icon('check')}标记完成</button>`:''}<button class="btn primary" data-edit-activity="${esc(id)}">${icon('edit')}编辑活动</button>`;
       let body=`<article class="activity-page" aria-label="活动详情"><button class="activity-back" data-tool="exit-detail" data-id="${esc(id)}">${icon('left')}返回${{calendar:'活动日历',power:'功率分析',compare:'活动比较',plans:'周期计划',workspace:'目标与器材'}[state.page]||'工作空间'}</button><header class="activity-title-row"><div class="activity-title"><div class="activity-sport-icon">${icon(a.type==='Ride'?'bike':a.type==='Run'?'run':'fitness')}</div><div><h1 tabindex="-1">${esc(a.name)}</h1><p>${esc(a.date)} · ${a.planned?'训练计划':'已完成活动'} · ${rows.length.toLocaleString()} 个采样${a.demo?' · 演示记录':''}</p></div></div><div class="actions">${buttons}</div></header><div class="ride-hero">${hero('距离','distance','km',2)}${hero('计时时间','timerSeconds')}${hero('平均速度','avgSpeed','km/h',1,'speed')}${hero('累计爬升','ascent','m')}${hero('平均功率','avgPower','W')}<div class="ride-hero-stat"><span>已记训练负荷</span><strong>${value(a.load)}</strong><p>保存值 · ${esc(data.displayMetrics?.tss?.scope||'计算')} TSS ${value(data.displayMetrics?.tss?.value??s.tss,1)}</p></div></div><div class="tabs activity-tabs" aria-label="活动分析分类">${tabs.map(([k,title])=>`<button data-detail-tab="${k}" data-id="${esc(id)}" class="${tab===k?'active':''}" aria-current="${tab===k?'page':'false'}">${title}</button>`).join('')}</div><div class="activity-detail-body">`;
       if(tab==='overview'){
         body+=overview(a,data,details);

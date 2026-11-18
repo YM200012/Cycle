@@ -1,3 +1,5 @@
+import {createAIService,buildActivityContext,AI_HISTORY_TURNS,DEFAULT_REVIEW_QUESTION} from './ai.mjs';
+import {formatReview} from './ai-markdown.mjs';
 import {parseAppleHealthStream,inspectAppleHealthStream} from './apple-health.mjs';
 import {priorAwareEstimates} from './performance-estimates.mjs';
 import {createWeatherStore} from './weather-store.mjs';
@@ -125,16 +127,23 @@ async function body(req,limit=40*1024*1024) {
   for await (const chunk of req) { size += chunk.length; if (size > limit) { const e = Error('请求超过 '+Math.round(limit/1024/1024)+' MB 限制'); e.status = 413; throw e; } chunks.push(chunk); }
   try { return JSON.parse(Buffer.concat(chunks).toString()); } catch { bad('JSON 格式无效'); }
 }
-export async function startServer({ dataDir = join(homedir(), '.cycle-local'), port = 0, terrainFetcher, weatherFetcher, healthUploadTtlMs=30*60000, healthPreviewTtlMs=15*60000 } = {}) {
+export async function startServer({ dataDir = join(homedir(), '.cycle-local'), port = 0, terrainFetcher, weatherFetcher, healthUploadTtlMs=30*60000, healthPreviewTtlMs=15*60000, aiFetcher } = {}) {
   await mkdir(dataDir, { recursive: true });
+  const ai=createAIService({dataDir,fetchImpl:aiFetcher||globalThis.fetch});
   const mapTiles = createMapTileStore(dataDir);
   const weatherStore=createWeatherStore(dataDir,{fetcher:weatherFetcher||globalThis.fetch});
   const terrain=createTerrainStore(dataDir,{fetcher:terrainFetcher||globalThis.fetch});
   const db = new DatabaseSync(join(dataDir, 'cycle.sqlite'));
   db.exec('PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS activities(id TEXT PRIMARY KEY, data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS workouts(id TEXT PRIMARY KEY, data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS plans(id TEXT PRIMARY KEY, data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS gear(id TEXT PRIMARY KEY, data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS goals(id TEXT PRIMARY KEY, data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS settings(id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS imports(hash TEXT PRIMARY KEY, filename TEXT NOT NULL); CREATE TABLE IF NOT EXISTS wellness(id TEXT PRIMARY KEY, data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS health_imports(id TEXT PRIMARY KEY, data TEXT NOT NULL);');
+  db.exec('PRAGMA foreign_keys=ON; CREATE TABLE IF NOT EXISTS ai_threads(id TEXT PRIMARY KEY REFERENCES activities(id) ON DELETE CASCADE, data TEXT NOT NULL);');
+  const pendingReviews=new Set();
+  let restoreVersion=0;
+  const readThread=id=>JSON.parse(db.prepare('SELECT data FROM ai_threads WHERE id=?').get(id)?.data||'null')||{revision:'',turns:[]};
+  const priorTurns=(thread,baseURL)=>thread.turns.filter(turn=>turn.baseURL===baseURL).slice(-AI_HISTORY_TURNS);
+  const publicTurn=({question,text,model,createdAt})=>({question,html:formatReview(text),model,createdAt});
   const all = table => db.prepare(`SELECT data FROM ${table}`).all().map(r => JSON.parse(r.data));
   const getSettings = () => ({ ...defaults, ...JSON.parse(db.prepare('SELECT data FROM settings WHERE id=1').get()?.data || '{}') });
-  const put = (table, id, data) => db.prepare(`INSERT OR REPLACE INTO ${table}(id,data) VALUES (?,?)`).run(id, JSON.stringify(data));
+  const put = (table, id, data) => db.prepare(`INSERT INTO ${table}(id,data) VALUES (?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data`).run(id, JSON.stringify(data));
   const transaction = fn => { db.exec('BEGIN IMMEDIATE'); try { const result = fn(); db.exec('COMMIT'); return result; } catch (e) { db.exec('ROLLBACK'); throw e; } };
   const healthPreviews=new Map(),healthUploads=new Map();let healthInspectBusy=false;
   const healthStaging=join(dataDir,'.health-staging');
@@ -169,6 +178,46 @@ export async function startServer({ dataDir = join(homedir(), '.cycle-local'), p
       if(tileMatch&&method==='GET'){
         let tile;try{tile=await mapTiles.get(Number(tileMatch[1]),Number(tileMatch[2]),Number(tileMatch[3]),url.searchParams.get('online')==='1',url.searchParams.get('style')||'topo');}catch(e){if(e.status===404&&url.searchParams.get('online')!=='1'){res.writeHead(204,{'Cache-Control':'no-store'});return res.end();}throw e;}
         res.writeHead(200,{'Content-Type':tile.contentType||'image/png','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});return res.end(tile.data);
+      }
+      if(path==='/api/ai/config'){
+        if(method==='GET')return send(200,await ai.getStatus());
+        if(method==='PUT')return send(200,await ai.saveConfig(await body(req,16384)));
+        if(method==='DELETE')return send(200,await ai.clearConfig());
+      }
+      if(path==='/api/ai/models'&&method==='POST'){await body(req,16384);return send(200,await ai.listModels());}
+      if(path==='/api/ai/thread'&&method==='DELETE'){
+        const id=url.searchParams.get('activityId');
+        if(pendingReviews.has(id))return send(409,{error:'本次复盘正在生成，请稍后清空'});
+        db.prepare('DELETE FROM ai_threads WHERE id=?').run(id);
+        return send(200,{ok:true});
+      }
+      if((path==='/api/ai/context'&&method==='GET')||(path==='/api/ai/review'&&method==='POST')){
+        const input=method==='POST'?await body(req,16384):{},id=method==='POST'?input.activityId:url.searchParams.get('activityId');
+        if(typeof id!=='string'||!id||id.length>100)bad('请选择需要复盘的活动');
+        const stored=db.prepare('SELECT data FROM activities WHERE id=?').get(id);
+        if(!stored)return send(404,{error:'活动不存在'});
+        const activity=JSON.parse(stored.data);if(activity.planned||activity.type==='Note')bad('请选择已完成的运动活动');
+        const settings=getSettings(),mode=activity.analysisMode||(activity.segments?.length?'manual':activity.laps?.length?'device':'auto');
+        const forAnalysis={...activity,...(mode==='auto'?{segments:[],laps:[]}:mode==='device'?{segments:[]}:{laps:[]})};
+        const generation=restoreVersion;
+        const analysis=analyzeActivity(forAnalysis,settings),context=buildActivityContext(activity,analysis,settings),config=await ai.getStatus();
+        const fingerprint=createHash('sha256').update(JSON.stringify({context,model:config.model,baseURL:config.baseURL})).digest('hex');
+        const thread=readThread(id);
+        if(method==='GET')return send(200,{activityId:id,context,model:config.model,baseURL:config.baseURL,fingerprint,thread:{revision:thread.revision,contextTurns:priorTurns(thread,config.baseURL).length,turns:thread.turns.map(publicTurn)}});
+        if(input.contextFingerprint!==fingerprint)return send(409,{error:'活动或模型设置已变化，请重新查看发送摘要'});
+        if((input.threadRevision??'')!==thread.revision||pendingReviews.has(id))return send(409,{error:'复盘对话已更新或正在生成，请重新打开后继续'});
+        if(thread.turns.length>=200)return send(400,{error:'本次对话已达 200 轮，请清空后重新开始'});
+        if(input.question!==undefined&&(typeof input.question!=='string'||input.question.length>2000))bad('问题请控制在 2000 字以内');
+        const question=input.question?.trim()||DEFAULT_REVIEW_QUESTION;
+        pendingReviews.add(id);
+        try{
+          const report=await ai.review({context,question,history:priorTurns(thread,config.baseURL),expectedConfig:{model:config.model,baseURL:config.baseURL}});
+          if(generation!==restoreVersion||!db.prepare('SELECT 1 FROM activities WHERE id=?').get(id))return send(409,{error:'活动已删除或从备份替换'});
+          const turn={...report,question,baseURL:config.baseURL,createdAt:new Date().toISOString()};
+          const next={revision:randomUUID(),turns:[...thread.turns,turn]};
+          put('ai_threads',id,next);
+          return send(200,{...report,fingerprint,revision:next.revision,contextTurns:priorTurns(next,config.baseURL).length,turn:publicTurn(turn)});
+        } finally {pendingReviews.delete(id);}
       }
       if (path === '/api/settings') {
         if (method === 'GET') return send(200, getSettings());
@@ -387,6 +436,7 @@ export async function startServer({ dataDir = join(homedir(), '.cycle-local'), p
         const healthImports=(backup.healthImports||[]).map(h=>{if(!h||typeof h.importedAt!=='string'||!Number.isFinite(Date.parse(h.importedAt))||!Array.isArray(h.types)||h.types.length>2000||h.types.some(k=>typeof k!=='string'||k.length>250))bad('健康导入历史无效');const r={id:str(h.id,'健康导入 ID',100)||randomUUID(),importedAt:h.importedAt,from:validDate(h.from),to:validDate(h.to),types:h.types};for(const k of ['days','fields','fillFields','updateFields','protectedFields','unchangedFields'])r[k]=finite(h[k],k,0,100000000);return r;});
         const imports = (backup.imports || []).map(i => { if (!/^[a-f0-9]{64}$/.test(i.hash)) bad('导入摘要无效'); return { hash:i.hash,filename:str(i.filename,'文件名',255) }; });
         transaction(() => { for (const table of ['activities','workouts','plans','gear','goals','wellness','imports','health_imports']) db.exec(`DELETE FROM ${table}`); put('settings',1,settings); activities.forEach(a=>put('activities',a.id,a)); workouts.forEach(a=>put('workouts',a.id,a)); plans.forEach(p=>put('plans',p.id,p)); gear.forEach(g=>put('gear',g.id,g)); goals.forEach(g=>put('goals',g.id,g)); wellness.forEach(w=>put('wellness',w.date,w)); healthImports.forEach(h=>put('health_imports',h.id,h)); imports.forEach(i=>db.prepare('INSERT OR IGNORE INTO imports(hash,filename) VALUES (?,?)').run(i.hash,i.filename)); });
+        restoreVersion++;
         return send(200,{ok:true});
       }
       if (path === '/api/import' && method === 'POST') {
@@ -465,7 +515,7 @@ export async function startServer({ dataDir = join(homedir(), '.cycle-local'), p
       }
       if (path.startsWith('/api/')) return send(404,{error:'接口不存在或请求方法不支持'});
       if (method !== 'GET' && method !== 'HEAD') return send(405,{error:'请求方法不支持'});
-      const files = {'/':'index.html','/index.html':'index.html','/app.js':'app.js','/apple-health-tools.js':'apple-health-tools.js','/weather.mjs':'weather.mjs','/weather-view.js':'weather-view.js','/performance-estimates.mjs':'performance-estimates.mjs','/elevation.mjs':'elevation.mjs','/chart-zoom.js':'chart-zoom.js','/chart-series.mjs':'chart-series.mjs','/settings.mjs':'settings.mjs','/activity-tools.js':'activity-tools.js','/activity-overview.js':'activity-overview.js','/activity-detail.css':'activity-detail.css','/ride-details.mjs':'ride-details.mjs','/ride-breakdown.mjs':'ride-breakdown.mjs','/ride-insights.js':'ride-insights.js','/route-map.js':'route-map.js','/route-map.css':'route-map.css','/route-geometry.mjs':'route-geometry.mjs','/planning-tools.js':'planning-tools.js','/workout.mjs':'workout.mjs','/workout-builder.js':'workout-builder.js','/wellness-trends.js':'wellness-trends.js','/wellness-trends.mjs':'wellness-trends.mjs','/workspace-tools.js':'workspace-tools.js','/styles.css':'styles.css','/favicon.svg':'favicon.svg'};
+      const files = {'/':'index.html','/index.html':'index.html','/app.js':'app.js','/ai-tools.js':'ai-tools.js','/apple-health-tools.js':'apple-health-tools.js','/weather.mjs':'weather.mjs','/weather-view.js':'weather-view.js','/performance-estimates.mjs':'performance-estimates.mjs','/elevation.mjs':'elevation.mjs','/chart-zoom.js':'chart-zoom.js','/chart-series.mjs':'chart-series.mjs','/settings.mjs':'settings.mjs','/activity-tools.js':'activity-tools.js','/activity-overview.js':'activity-overview.js','/activity-detail.css':'activity-detail.css','/ride-details.mjs':'ride-details.mjs','/ride-breakdown.mjs':'ride-breakdown.mjs','/ride-insights.js':'ride-insights.js','/route-map.js':'route-map.js','/route-map.css':'route-map.css','/route-geometry.mjs':'route-geometry.mjs','/planning-tools.js':'planning-tools.js','/workout.mjs':'workout.mjs','/workout-builder.js':'workout-builder.js','/wellness-trends.js':'wellness-trends.js','/wellness-trends.mjs':'wellness-trends.mjs','/workspace-tools.js':'workspace-tools.js','/styles.css':'styles.css','/favicon.svg':'favicon.svg'};
       if (!files[path]) return send(404,{error:'文件不存在'});
       const file=files[path], content=await readFile(join(root,file));
       res.writeHead(200,{'Content-Type':file.endsWith('.html')?'text/html; charset=utf-8':(file.endsWith('.js')||file.endsWith('.mjs'))?'text/javascript; charset=utf-8':file.endsWith('.svg')?'image/svg+xml':'text/css; charset=utf-8','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",'X-Content-Type-Options':'nosniff'}); res.end(method==='HEAD'?undefined:content);
